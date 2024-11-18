@@ -119,7 +119,7 @@ def log_general_and_types():
 
     # Log messages with rate limiting by type
     for _ in range(3):
-        logger.debug("Mensaje de depuración (debug)", extra=RateLimit(stream_id="debug"))
-        logger.info("Mensaje informativo (info)", extra=RateLimit(stream_id="info"))
-        logger.warning("Mensaje de advertencia (warning)", extra=RateLimit(stream_id="warning"))
-        logger.error("Mensaje de error (error)", extra=RateLimit(stream_id="error"))
+        logger.debug("Debug message (debug)", extra=RateLimit(stream_id="debug"))
+        logger.info("Informational message (info)", extra=RateLimit(stream_id="info"))
+        logger.warning("Warning message (warning)", extra=RateLimit(stream_id="warning"))
+        logger.error("Error message (error)", extra=RateLimit(stream_id="error"))
