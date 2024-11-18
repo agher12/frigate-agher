@@ -9,6 +9,16 @@ from logging.handlers import QueueHandler, QueueListener
 from typing import Deque, Optional
 
 from frigate.util.builtin import clean_camera_user_pass
+from log_rate_limit import StreamRateLimitFilter, RateLimit
+
+##PAQUETE PRINCIPAL
+logger = logging.getLogger("frigate")
+logger.setLevel(logging.INFO)
+
+#Rate-limit Filter
+rate_limit_filter = StreamRateLimitFilter(period_sec=30)
+logger.addFilter(rate_limit_filter)
+
 
 LOG_HANDLER = logging.StreamHandler()
 LOG_HANDLER.setFormatter(
@@ -23,6 +33,7 @@ LOG_HANDLER.addFilter(
         "You are using a scalar distance function"
     )
 )
+logger.addHandler(LOG_HANDLER)
 
 log_listener: Optional[QueueListener] = None
 
@@ -101,3 +112,14 @@ class LogPipe(threading.Thread):
     def close(self) -> None:
         """Close the write end of the pipe."""
         os.close(self.fdWrite)
+
+# Log general messages and messages by type with rate limiting
+def log_general_and_types():
+    logger.info("This is a general log message, nor rate-limited.")
+
+    # Log messages with rate limiting by type
+    for _ in range(3):
+        logger.debug("Mensaje de depuración (debug)", extra=RateLimit(stream_id="debug"))
+        logger.info("Mensaje informativo (info)", extra=RateLimit(stream_id="info"))
+        logger.warning("Mensaje de advertencia (warning)", extra=RateLimit(stream_id="warning"))
+        logger.error("Mensaje de error (error)", extra=RateLimit(stream_id="error"))
